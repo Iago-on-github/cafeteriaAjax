@@ -1,8 +1,8 @@
-function verifyActiveCarousel() {
-    if (imageUrls.length >= 4) {
+// function verifyActiveCarousel() {
+//     if (imageUrls.length >= 4) {
 
-    }
-}
+//     }
+//
 
 function loadingImage(url) {
     $.ajax({
@@ -12,27 +12,8 @@ function loadingImage(url) {
         success: function (data) {
             $("#imageList").empty();
 
-            let brands = [];
-            let imageUrls = [];
-
-            // console.log(data);
-
-            $(data).find("ul.nivel-dois > li").each(function() {
-                if ($(this).attr('class') && $(this).attr('class').startsWith('categoria-marca-')) {
-                    let brandLink = $(this).find('a').attr('href'); 
-                    let brandName = $(this).find('a').text().trim(); 
-                    let brandImage = $(data).find('.marca-info .image.pull-right img').attr('src');
-                    // let brandImage = $('.image .pull-right > img').attr('src');
-
-                    console.log("Imagem da marca:", brandImage);
-                    console.log("Link da marca:", brandLink);
-                    console.log("Name da marca:", brandName);
-                    brands.push({link: brandLink, img: brandImage, name: brandName});
-                }
-            });
-
             sessionStorage.setItem('brands', JSON.stringify(brands));
-            imageUrls = brands.map(brand => brand.img); 
+            imageUrls = brands.map(brand => brand.img);
 
             brands.forEach(brand => {
                 $("#imageList").append(`
@@ -50,6 +31,28 @@ function loadingImage(url) {
         }
     });
 }
+
+let brands = [];
+let imageUrls = [];
+
+$(data).find("ul.nivel-dois > li").each(function() {
+    if ($(this).attr('class') && $(this).attr('class').startsWith('categoria-marca-')) {
+
+        let brandName = $(this).find('a').text().trim(); 
+        // let brandImage = $(this).find('.marca-info .image.pull-right img').attr('src');
+        // let brandLink = $(this).find('a').attr('href');
+
+        $.ajax({
+            url: 'https://loja-convite-teste.lojaintegrada.com.br/marca/' + brandName,
+            method: 'GET',
+            dataType: 'html',
+            success: function(data) {
+                let brandImage = $(this).find(".marca-info > img").attr('src');
+            }
+        });
+        brands.push({link: brandLink, img: brandImage, name: brandName});
+    }
+});
 
 loadingImage('https://loja-convite-teste.lojaintegrada.com.br/categoria/17437623.html?fq=');
 

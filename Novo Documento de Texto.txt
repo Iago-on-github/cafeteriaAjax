@@ -27,3 +27,9 @@ Exibição do Carrossel de Marcas: Finalmente, exiba o carrossel na página, gar
 ----------------------
 
 https://loja-convite-teste.lojaintegrada.com.br/marca/arno.html
+
+-----------------------
+
+--> após o ajax para o painel de marcas, fazer um novo ajax para acessar cada marca desse painel e poder extrair as informações do seu body.
+--> as informações a serem extraídas são: link atual da página, nome da marca e image. 
+--> tratar como função asych
