@@ -1,0 +1,52 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+body {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+
+    height: 100vh; 
+}
+
+.carouselSection {
+    display: flex;
+    background-color: antiquewhite;
+    height: 145px;
+    width: 750px;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.carouselContainer ul {
+    display: flex;
+    list-style-type: none;
+}
+
+.carouselContainer li {
+    margin: 0px 15px 10px 0px;
+}
+
+.carouselContainer a {
+    display: flex;
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    background-color: wheat;
+
+    height: 89px;
+    width: 89px;
+    border-radius: 50%;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.carouselContainer p {
+    text-align: center;
+
+    margin: 10px 0px 0px 0px;
+}

@@ -1,0 +1,29 @@
+1. estando dentro da pag de catg. ou busca, verificar, no filtro lateral, se existe o filtro por "marca" ativo;
+
+2. caso tenha, exibir o carrosel de marcas semelhante ao do mercado livre -> ( https://lista.mercadolivre.com.br/celulares#D[A:celulares] );
+
+3. dependendo da quantidade ativar o carrosel, caso contrário, não ativar;
+
+4. buscar as imagens via AJAX ou fetch, armazena-las em um obj e guarda-las dentro do sessionStorage;
+
+5. dentro do obj deve conter: link da marca, a url da img e o nome da marca.
+
+---
+
+Verificação do Filtro de Marca Ativo: Comece verificando se o filtro de marca está ativo. Isso é fundamental para determinar se você deve prosseguir com as etapas seguintes. (X)
+
+Busca de Imagens via AJAX ou Fetch: Se o filtro estiver ativo, inicie a busca das imagens das marcas. Isso pode ser feito antes de armazenar os dados, pois você precisará das informações para criar o carrossel.
+
+Estrutura do Objeto: Enquanto você busca as imagens, comece a estruturar o objeto que armazenará as informações (link, imgUrl, nome). Isso pode ser feito em paralelo com a busca de dados.
+
+Armazenamento no sessionStorage: Após obter os dados, armazene-os no sessionStorage. Isso garante que você tenha acesso a esses dados durante a sessão do navegador.
+
+Ativação do Carrossel com Base na Quantidade: Verifique a quantidade de marcas disponíveis. Se houver marcas suficientes, você pode prosseguir para a exibição do carrossel.
+
+Exibição Dinâmica do Carrossel: Crie uma função que renderize o carrossel com as informações armazenadas. Utilize um loop para iterar sobre o objeto e criar os elementos HTML necessários.
+
+Exibição do Carrossel de Marcas: Finalmente, exiba o carrossel na página, garantindo que ele esteja visível apenas se houver marcas suficientes.
+
+------------
+
+https://loja-convite-teste.lojaintegrada.com.br/marca/arno.html
