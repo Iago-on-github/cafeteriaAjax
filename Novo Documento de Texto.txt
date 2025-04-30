@@ -24,6 +24,6 @@ Exibição Dinâmica do Carrossel: Crie uma função que renderize o carrossel c
 
 Exibição do Carrossel de Marcas: Finalmente, exiba o carrossel na página, garantindo que ele esteja visível apenas se houver marcas suficientes.
 
-------------
+----------------------
 
 https://loja-convite-teste.lojaintegrada.com.br/marca/arno.html
