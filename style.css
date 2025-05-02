@@ -1,4 +1,4 @@
-/* * {
+* {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
@@ -49,4 +49,10 @@ body {
     text-align: center;
 
     margin: 10px 0px 0px 0px;
-} */
+}
+
+#imageList img {
+    border-radius: 50%;
+    height: 90px;
+    width: 90px;
+}
