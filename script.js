@@ -1,4 +1,3 @@
-
 let brands = [];
 let imageUrls = [];
 
@@ -8,25 +7,52 @@ function loadingImage() {
     sessionStorage.setItem('brands', JSON.stringify(brands));
     imageUrls = brands.map(brand => brand.img);
 
-    brands.forEach(brand => {
-        $("#imageList").append(`
-            <li>
-                <a href="${brand.link}">
-                    <img src="${brand.img}" alt="${brand.name}">
-                </a>
-                <p>${brand.name}</p>
-            </li>
-        `);
-    });
+    if ($(".categoria-marcas.com-filho.borda-principal").length && $("#listagemProdutos").length) {
+        let html = "";
+    
+        brands.forEach(brand => {
+            let nomeFormatado = brand.name.replace(/\s*\(.*?\)/g, '').toLowerCase();
+            html += `
+                <li>
+                    <a href="${brand.link}">
+                        <img src="${brand.img}" alt="${brand.name}">
+                    </a>
+                    <p>${nomeFormatado}</p>
+                </li>
+            `;
+        });
+    
+        const carouselHTML = `
+            <section class="carouselSection">
+                <div class="carouselContainer">
+                    <ul id="imageList">
+                        ${html}
+                    </ul>
+                </div>
+            </section>
+        `;
+    
+        $("#listagemProdutos").before(carouselHTML);
 
-    $('.carouselSection').slick({
-        speed: 300,
-        slidesToShow: 4,
-        slidesToScroll: 4,
-        // responsive: []
-      });
-}
-
+        setTimeout(() => {
+            $('#imageList').slick({
+                infinite: true,
+                slidesToShow: 5, // <-- quantidade correta
+                slidesToScroll: 1,
+                prevArrow: '<button class="slick-prev">&#8592;</button>',
+                nextArrow: '<button class="slick-next">&#8594;</button>',
+                responsive: [
+                    {
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 1
+                        }
+                    }
+                ]});
+        }, 100);
+    }
+}  
 
 function fetchBrands() {
 
@@ -85,5 +111,3 @@ function fetchBrands() {
 }
 
 fetchBrands();
-
-

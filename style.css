@@ -1,22 +1,22 @@
 * {
     margin: 0;
     padding: 0;
-    font-family: sans-serif;
+    font-family: "Roboto", sans-serif;
 }
 
-body {
+/* body {
     display: flex; 
     justify-content: center; 
     align-items: center; 
 
     height: 100vh; 
-}
+} */
 
 .carouselSection {
-    display: flex;
-    background-color: antiquewhite;
+    display: block;
+    /* background-color: antiquewhite; */
     height: 145px;
-    width: 750px;
+    width: 100%;
 
     justify-content: center;
     align-items: center;
@@ -24,11 +24,12 @@ body {
 
 .carouselContainer ul {
     display: flex;
+    overflow: hidden;
     list-style-type: none;
 }
 
 .carouselContainer li {
-    margin: 0px 15px 10px 0px;
+    margin: 15px 18px 10px -8px;
 }
 
 .carouselContainer a {
@@ -45,14 +46,55 @@ body {
     align-items: center;
 }
 
-.carouselContainer p {
+/* .carouselContainer p {
     text-align: center;
-
-    margin: 10px 0px 0px 0px;
-}
+    margin: 15px 100px 0px -40px;
+    font-size: 22px;
+    text-align: center;
+} */
 
 #imageList img {
     border-radius: 50%;
     height: 90px;
     width: 90px;
+}
+
+.slick-arrow {
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    color: #000;
+    font-size: 24px;
+    height: 40px;
+    width: 40px;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    position: absolute;
+    top: 17%;
+    transform: translateY(-50%);
+}
+
+.slick-prev {
+    left: 3px;
+}
+
+.slick-next {
+    right: 21px;
+}
+
+.slick-slide {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.slick-slide p {
+    margin: 20px 10px 10px 10px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 25px;
+    color: black;
 }
