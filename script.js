@@ -1,7 +1,12 @@
+function isCategoryOrSearchPage() {
+    return window.location.href.includes("/buscar?q=") || window.location.href.includes("/categoria/")
+}
+
 let brands = [];
 let imageUrls = [];
 
 function loadingImage() {
+
     $("#imageList").empty();
 
     sessionStorage.setItem('brands', JSON.stringify(brands));
@@ -9,7 +14,7 @@ function loadingImage() {
 
     if ($(".categoria-marcas.com-filho.borda-principal").length && $("#listagemProdutos").length) {
         let html = "";
-    
+
         brands.forEach(brand => {
             let nomeFormatado = brand.name.replace(/\s*\(.*?\)/g, '').toLowerCase();
             html += `
@@ -21,9 +26,10 @@ function loadingImage() {
                 </li>
             `;
         });
-    
+
         const carouselHTML = `
             <section class="carouselSection">
+            <h2 class="carouselTitle">Filtre por Marca</h2>
                 <div class="carouselContainer">
                     <ul id="imageList">
                         ${html}
@@ -31,13 +37,15 @@ function loadingImage() {
                 </div>
             </section>
         `;
-    
-        $("#listagemProdutos").before(carouselHTML);
+
+        if (isCategoryOrSearchPage()) {
+            $(".breadcrumbs.borda-alpha").before(carouselHTML);
+        };
 
         setTimeout(() => {
             $('#imageList').slick({
                 infinite: true,
-                slidesToShow: 5, // <-- quantidade correta
+                slidesToShow: 5,
                 slidesToScroll: 1,
                 prevArrow: '<button class="slick-prev">&#8592;</button>',
                 nextArrow: '<button class="slick-next">&#8594;</button>',
@@ -49,12 +57,20 @@ function loadingImage() {
                             slidesToScroll: 1
                         }
                     }
-                ]});
-        }, 100);
+                ]
+            });
+        }, 100)
     }
-}  
+}
 
 function fetchBrands() {
+
+    // if (sessionStorage.getItem('brands')) {
+    //     brands = JSON.parse(sessionStorage.getItem('brands'));
+    //     imageUrls = brands.map(brand => brand.img);
+    //     loadingImage();
+    //     return;
+    // }
 
     $.ajax({
         url: 'https://loja-convite-teste.lojaintegrada.com.br/',
@@ -69,14 +85,15 @@ function fetchBrands() {
 
             items.each(function () {
                 let brandName = $(this).find('a').text().trim();
-                let brandLink = $(this).find('a').attr('href');
+                let brandImageLink = $(this).find('a').attr('href');
+                let brandLink2 = `?q=p&fq=P__2__Marca:${encodeURIComponent(brandName)}`;
 
-                if (brandLink && !brandLink.startsWith('http')) {
-                    brandLink = new URL(brandLink, 'https://loja-convite-teste.lojaintegrada.com.br/').href;
+                if (brandLink2 && !brandLink2.startsWith('http')) {
+                    brandLink2 = new URL(brandLink2, 'https://loja-convite-teste.lojaintegrada.com.br/').href;
                 }
 
                 $.ajax({
-                    url: brandLink,
+                    url: brandImageLink,
                     method: 'GET',
                     dataType: 'html',
                     success: function (pageData) {
@@ -84,7 +101,7 @@ function fetchBrands() {
 
                         brands.push({
                             name: brandName,
-                            link: brandLink,
+                            link: brandLink2,
                             img: brandImage
                         });
                     },
