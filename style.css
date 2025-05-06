@@ -22,7 +22,6 @@
     margin-bottom: 20px;
 }
 
-
 .carouselSection h2 {
     text-align: center;
 }
@@ -113,4 +112,12 @@
     font-size: 25px;
 
     color: black;
+}
+
+/* brand ativa ou n */
+
+.active-brand {
+    border: 2px solid red;
+    border-radius: 7px;
+    padding: 7px;
 }

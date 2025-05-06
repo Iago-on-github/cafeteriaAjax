@@ -5,6 +5,38 @@ function isCategoryOrSearchPage() {
 let brands = [];
 let imageUrls = [];
 
+function updateBrandFilterUrl(cleanedName) {
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+
+    let currentBrandFilter = params.getAll('fq').find(p => p.startsWith('P__2__Marca:'));
+
+    let marcasSelecionadas = [];
+
+    if (currentBrandFilter) {
+        const marcasString = currentBrandFilter.split(':')[1];
+        marcasSelecionadas = marcasString.split('++');
+    }
+
+    const index = marcasSelecionadas.indexOf(cleanedName);
+    if (index > -1) {
+        marcasSelecionadas.splice(index, 1);
+    } else {
+        marcasSelecionadas.push(cleanedName);
+
+        params.delete('fq');
+
+        if (marcasSelecionadas.length > 0) {
+            const filtroFinal = `P__2__Marca:${marcasSelecionadas.join('++')}`;
+            params.append('fq', filtroFinal);
+        }
+
+        return `${url.pathname}?${params.toString()}`;
+    }
+}
+
+
+
 function renderBrandCarousel() {
     $("#imageList").empty();
 
@@ -12,12 +44,19 @@ function renderBrandCarousel() {
     imageUrls = brands.map(brand => brand.img);
 
     if ($(".categoria-marcas.com-filho.borda-principal").length && $("#listagemProdutos").length && isCategoryOrSearchPage()) {
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeFilters = urlParams.getAll('fq').filter(p => p.startsWith('P__2__Marca:'));
+
         const html = brands.map(brand => {
             const cleanedName = brand.name.replace(/\s*\(.*?\)/g, '').trim();
-            const brandLink = `https://loja-convite-teste.lojaintegrada.com.br/categoria/17437623.html?fq=P__2__Marca%3a${encodeURIComponent(cleanedName)}`;
+            const brandLink = updateBrandFilterUrl(cleanedName);
+
+            const filtroAtual = `P__2__Marca:${cleanedName}`;
+            const isActive = activeFilters.includes(filtroAtual);
 
             return `
-                <li>
+                <li class="${isActive ? 'active-brand' : ''}">
                     <a href="${brandLink}">
                         <img src="${brand.img}" alt="${brand.name}">
                     </a>
@@ -59,16 +98,28 @@ function renderBrandCarousel() {
 }
 
 function fetchBrands() {
-    const cachedBrands = sessionStorage.getItem('brands');
-    if (cachedBrands) {
-        brands = JSON.parse(cachedBrands);
-        imageUrls = brands.map(brand => brand.img);
-        $(document).ready(() => setTimeout(renderBrandCarousel, 100));
-        return;
+    function waitForElement(selector, callback) {
+        const el = document.querySelector(selector);
+        if (el) {
+            callback();
+        } else {
+            setTimeout(() => waitForElement(selector, callback), 100);
+        }
     }
 
+    const cachedBrands = sessionStorage.getItem('brands');
+
+    $(document).ready(() => {
+        if (cachedBrands) {
+            brands = JSON.parse(cachedBrands);
+            imageUrls = brands.map(brand => brand.img);
+            waitForElement("#listagemProdutos", renderBrandCarousel);
+            return;
+        }
+    });
+
     $.ajax({
-        url: 'https://loja-convite-teste.lojaintegrada.com.br/',
+        url: window.location.href,
         method: 'GET',
         dataType: 'html',
         success: function (data) {
@@ -82,7 +133,7 @@ function fetchBrands() {
                 let { name, link, imgLink } = extractBrandData(this);
 
                 if (link && !link.startsWith('http')) {
-                    link = new URL(link, 'https://loja-convite-teste.lojaintegrada.com.br/').href;
+                    link = new URL(link, window.location.href).href;
                 }
 
                 fetchBrandImage(imgLink, name, (brandName, brandImage) => {
@@ -111,7 +162,7 @@ function extractBrandData(item) {
     const brandName = $(item).find('a').text().trim();
     const imgLink = $(item).find('a').attr('href');
     const name = brandName.replace(/\s*\(.*?\)/g, '').trim();
-    const link = `https://loja-convite-teste.lojaintegrada.com.br/buscar?fq=P2Marca%3a${encodeURIComponent(name)}`;
+    const link = `${window.location.origin}/buscar?fq=P__2__Marca:${encodeURIComponent(name)}`;
 
     return { name, link, imgLink };
 }
