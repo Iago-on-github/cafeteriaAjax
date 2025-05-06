@@ -16,10 +16,14 @@ https://loja-convite-teste.lojaintegrada.com.br/marca/arno.html
 
 Vai precisar fazer alguns ajustes.
 
-Faltou o titulo pra a area, que pode ser "filtre por marca"
+Faltou o titulo pra a area, que pode ser "filtre por marca" - (X)
 
-A configuração não esta reaproveitando a informação guardada no sessionStorage, esta apenas armazenando porem não esta reutilizando, fazendo com a requisição se repita varias vezes sem a necessidade
+A configuração não esta reaproveitando a informação guardada no sessionStorage, 
+esta apenas armazenando porem não esta reutilizando, fazendo com a requisição se repita varias vezes sem a necessidade - (X)
 
-Ela não esta utilizando o link presente na categoria, a ideia é que ela sirva como filtro. Ao clicar na marca ela está apenas redirecionando para a mesma. A ação esperada deve ser filtrar os produtos ao clicar na categoria(utilizar o mesmo link na categoria lateral onde ela passa um parâmetro, por exemplo, "?fq=P2Marca%3aArno" )
+Ela não esta utilizando o link presente na categoria, a ideia é que ela sirva como filtro. 
+Ao clicar na marca ela está apenas redirecionando para a mesma. A ação esperada deve ser filtrar os produtos ao clicar na 
+categoria(utilizar o mesmo link na categoria lateral onde ela passa um parâmetro, por exemplo, "?fq=P2Marca%3aArno") (X)
 
-Validação de categorias, apesar de armazenar as informações das marcas, ela deve exibir somente as marcas presentes na pagina. Ao acessar paginas que não possuem filtro de marcas estão retornando todas.
+Validação de categorias, apesar de armazenar as informações das marcas, ela deve exibir somente as marcas presentes na pagina.
+ Ao acessar paginas que não possuem filtro de marcas estão retornando todas. (X)

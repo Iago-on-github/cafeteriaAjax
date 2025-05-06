@@ -1,46 +1,41 @@
 function isCategoryOrSearchPage() {
-    return window.location.href.includes("/buscar?q=") || window.location.href.includes("/categoria/")
+    return window.location.href.includes("/buscar?q=") || window.location.href.includes("/categoria/");
 }
 
 let brands = [];
 let imageUrls = [];
 
-function loadingImage() {
-
+function renderBrandCarousel() {
     $("#imageList").empty();
 
     sessionStorage.setItem('brands', JSON.stringify(brands));
     imageUrls = brands.map(brand => brand.img);
 
-    if ($(".categoria-marcas.com-filho.borda-principal").length && $("#listagemProdutos").length) {
-        let html = "";
+    if ($(".categoria-marcas.com-filho.borda-principal").length && $("#listagemProdutos").length && isCategoryOrSearchPage()) {
+        const html = brands.map(brand => {
+            const cleanedName = brand.name.replace(/\s*\(.*?\)/g, '').trim();
+            const brandLink = `https://loja-convite-teste.lojaintegrada.com.br/categoria/17437623.html?fq=P__2__Marca%3a${encodeURIComponent(cleanedName)}`;
 
-        brands.forEach(brand => {
-            let nomeFormatado = brand.name.replace(/\s*\(.*?\)/g, '').toLowerCase();
-            html += `
+            return `
                 <li>
-                    <a href="${brand.link}">
+                    <a href="${brandLink}">
                         <img src="${brand.img}" alt="${brand.name}">
                     </a>
-                    <p>${nomeFormatado}</p>
+                    <p>${cleanedName.toLowerCase()}</p>
                 </li>
             `;
-        });
+        }).join('');
 
         const carouselHTML = `
             <section class="carouselSection">
-            <h2 class="carouselTitle">Filtre por Marca</h2>
+                <h2 class="carouselTitle">Filtre por Marca</h2>
                 <div class="carouselContainer">
-                    <ul id="imageList">
-                        ${html}
-                    </ul>
+                    <ul id="imageList">${html}</ul>
                 </div>
             </section>
         `;
 
-        if (isCategoryOrSearchPage()) {
-            $(".breadcrumbs.borda-alpha").before(carouselHTML);
-        };
+        $(".breadcrumbs.borda-alpha").before(carouselHTML);
 
         setTimeout(() => {
             $('#imageList').slick({
@@ -59,70 +54,80 @@ function loadingImage() {
                     }
                 ]
             });
-        }, 100)
+        }, 100);
     }
 }
 
 function fetchBrands() {
-
-    // if (sessionStorage.getItem('brands')) {
-    //     brands = JSON.parse(sessionStorage.getItem('brands'));
-    //     imageUrls = brands.map(brand => brand.img);
-    //     loadingImage();
-    //     return;
-    // }
+    const cachedBrands = sessionStorage.getItem('brands');
+    if (cachedBrands) {
+        brands = JSON.parse(cachedBrands);
+        imageUrls = brands.map(brand => brand.img);
+        $(document).ready(() => setTimeout(renderBrandCarousel, 100));
+        return;
+    }
 
     $.ajax({
         url: 'https://loja-convite-teste.lojaintegrada.com.br/',
         method: 'GET',
         dataType: 'html',
         success: function (data) {
-            let items = $(data).find("ul.nivel-dois > li").filter(function () {
+            const items = $(data).find("ul.nivel-dois > li").filter(function () {
                 return $(this).attr('class')?.startsWith('categoria-marca-');
             });
 
             let pending = items.length;
 
             items.each(function () {
-                let brandName = $(this).find('a').text().trim();
-                let brandImageLink = $(this).find('a').attr('href');
-                let brandLink2 = `?q=p&fq=P__2__Marca:${encodeURIComponent(brandName)}`;
+                let { name, link, imgLink } = extractBrandData(this);
 
-                if (brandLink2 && !brandLink2.startsWith('http')) {
-                    brandLink2 = new URL(brandLink2, 'https://loja-convite-teste.lojaintegrada.com.br/').href;
+                if (link && !link.startsWith('http')) {
+                    link = new URL(link, 'https://loja-convite-teste.lojaintegrada.com.br/').href;
                 }
 
-                $.ajax({
-                    url: brandImageLink,
-                    method: 'GET',
-                    dataType: 'html',
-                    success: function (pageData) {
-                        let brandImage = $(pageData).find(".marca-info .image.pull-right img").attr('src');
-
+                fetchBrandImage(imgLink, name, (brandName, brandImage) => {
+                    if (brandImage) {
                         brands.push({
                             name: brandName,
-                            link: brandLink2,
+                            link: link,
                             img: brandImage
                         });
-                    },
-                    complete: function () {
-                        pending--;
-                        if (pending === 0) {
-                            loadingImage();
-                        }
-                    },
-                    error: function () {
-                        console.warn(`Erro ao buscar imagem da marca: ${brandName}`);
-                        pending--;
-                        if (pending === 0) {
-                            loadingImage();
-                        }
+                    }
+
+                    pending--;
+                    if (pending === 0) {
+                        renderBrandCarousel();
                     }
                 });
             });
         },
         error: function () {
             console.log("Erro ao carregar painel de marcas");
+        }
+    });
+}
+
+function extractBrandData(item) {
+    const brandName = $(item).find('a').text().trim();
+    const imgLink = $(item).find('a').attr('href');
+    const name = brandName.replace(/\s*\(.*?\)/g, '').trim();
+    const link = `https://loja-convite-teste.lojaintegrada.com.br/buscar?fq=P2Marca%3a${encodeURIComponent(name)}`;
+
+    return { name, link, imgLink };
+}
+
+function fetchBrandImage(brandImageLink, brandName, callback) {
+    $.ajax({
+        url: brandImageLink,
+        method: 'GET',
+        dataType: 'html',
+        success: function (pageData) {
+            const brandImage = $(pageData).find(".marca-info .image.pull-right img").attr('src');
+            callback(brandName, brandImage);
+        },
+        error: function () {
+            console.warn(`Erro ao buscar imagem da marca: ${brandName}`);
+            callback(brandName, null);
         }
     });
 }
