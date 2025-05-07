@@ -14,25 +14,13 @@ https://loja-convite-teste.lojaintegrada.com.br/marca/arno.html
 
 -----------------------
 
-
-
-2 - Dentro da pagina das categorias ao clicar no filtro ele ta me redirecionando pra home novamente, validar - (X)
-
-3 - Não utilizar os links estáticos da loja, deve pegar as informações dinamicamente, do contrario a mesma so funciona 
-para essa loja. (X)
-
-4 - Ao acessar uma categoria pelo filtro, o carrossel deve permanecer ativo e o filtro ativo ficar com 
-uma indicação de que esta ativo(uma borda vermelha é o suficiente) - (X)
-
----------------------
 flt fzr: 
 
-1 - Em algumas situações o carrossel não esta sendo criado, mesmo acabando de abrir a pagina. 
-Foi preciso acessar e remover a "brands" do session storage para que voltasse a exibir, validar isso.
+1 - A aplicação ela esta rodando diversas vezes, fazendo com o que o tamanho dela aumente cada vez mais, o objeto o array no 
+local storage fica maior a cada pagina acessada, o ideal que ele rode apenas uma vez e após isso validar 
+na pagina de categoria, caso exista alguma marca que não possua registro no session storage fazer uma nova busca e anexar as 
+novas. 
 
-5 - O filtro também precisa suportar múltiplos filtros de marcas de uma vez, ou seja, é necessário que haja uma 
-validação pra saber se ja existe algum filtro ativo 
-
-
-
-
+2 - O problema de exibir todas as marcas em paginas que não possuem filtro de marcas ativo ainda persiste, 
+fazendo com que ela exiba na pagina de categoria. Ela deve exibir somente as marcas presentes na categoria/busca - (X)
+ 

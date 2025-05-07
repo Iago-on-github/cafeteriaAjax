@@ -1,3 +1,4 @@
+// verificação da página atual para exibir ou não o carrossel
 function isCategoryOrSearchPage() {
     return window.location.href.includes("/buscar?q=") || window.location.href.includes("/categoria/");
 }
@@ -5,6 +6,7 @@ function isCategoryOrSearchPage() {
 let brands = [];
 let imageUrls = [];
 
+// atualiza/filtra a url para as requisições
 function updateBrandFilterUrl(cleanedName) {
     const url = new URL(window.location.href);
     const params = new URLSearchParams(url.search);
@@ -23,47 +25,66 @@ function updateBrandFilterUrl(cleanedName) {
         marcasSelecionadas.splice(index, 1);
     } else {
         marcasSelecionadas.push(cleanedName);
-
-        params.delete('fq');
-
-        if (marcasSelecionadas.length > 0) {
-            const filtroFinal = `P__2__Marca:${marcasSelecionadas.join('++')}`;
-            params.append('fq', filtroFinal);
-        }
-
-        return `${url.pathname}?${params.toString()}`;
     }
+
+    params.delete('fq');
+
+    if (marcasSelecionadas.length > 0) {
+        const filtroFinal = `P__2__Marca:${marcasSelecionadas.join('++')}`;
+        params.append('fq', filtroFinal);
+    }
+
+    return `${url.pathname}?${params.toString()}`;
 }
 
-
-
 function renderBrandCarousel() {
+    $('.carouselSection')?.remove();
+    
     $("#imageList").empty();
 
     sessionStorage.setItem('brands', JSON.stringify(brands));
     imageUrls = brands.map(brand => brand.img);
 
     if ($(".categoria-marcas.com-filho.borda-principal").length && $("#listagemProdutos").length && isCategoryOrSearchPage()) {
-
         const urlParams = new URLSearchParams(window.location.search);
-        const activeFilters = urlParams.getAll('fq').filter(p => p.startsWith('P__2__Marca:'));
 
-        const html = brands.map(brand => {
+        const availableBrandNames = $(".faceta-marca .atributo-lista ul li a label")
+            .map(function () {
+                return $(this).text().replace(/\s*\(\d+\)/, "").trim();
+            }).get();
+
+        const activeFilters = urlParams.getAll('fq')
+            .filter(p => p.startsWith('P__2__Marca:'))
+            .flatMap(p => p.replace('P__2__Marca:', '').split('++'));
+
+        const uniqueBrands = [];
+        const seenNames = new Set();
+
+        for (const brand of brands) {
             const cleanedName = brand.name.replace(/\s*\(.*?\)/g, '').trim();
-            const brandLink = updateBrandFilterUrl(cleanedName);
+            if (!seenNames.has(cleanedName)) {
+                seenNames.add(cleanedName);
+                uniqueBrands.push({ ...brand, cleanedName });
+            }
+        }
 
-            const filtroAtual = `P__2__Marca:${cleanedName}`;
-            const isActive = activeFilters.includes(filtroAtual);
+        const html = uniqueBrands
+            .filter(brand => availableBrandNames.includes(brand.cleanedName))
+            .map(brand => {
+                const brandLink = updateBrandFilterUrl(brand.cleanedName);
+                const isActive = activeFilters.includes(brand.cleanedName);
 
-            return `
-                <li class="${isActive ? 'active-brand' : ''}">
-                    <a href="${brandLink}">
-                        <img src="${brand.img}" alt="${brand.name}">
-                    </a>
-                    <p>${cleanedName.toLowerCase()}</p>
-                </li>
-            `;
-        }).join('');
+                return `
+                    <li class="${isActive ? 'active-brand' : ''}">
+                        <a href="${brandLink}">
+                            <img src="${brand.img}" alt="${brand.name}">
+                        </a>
+                        <p>${brand.cleanedName.toLowerCase()}</p>
+                    </li>
+                `;
+            }).join('');
+
+        if (!html) return;
 
         const carouselHTML = `
             <section class="carouselSection">
@@ -77,7 +98,21 @@ function renderBrandCarousel() {
         $(".breadcrumbs.borda-alpha").before(carouselHTML);
 
         setTimeout(() => {
-            $('#imageList').slick({
+            const $imageList = $('#imageList');
+            const brandCount = $imageList.find('li').length;
+        
+            if ($imageList.hasClass('slick-initialized')) {
+                $imageList.slick('unslick');
+            }
+        
+            if (brandCount <= 3) {
+                $imageList.addClass('static-brand-list');
+                return;
+            }
+        
+            $imageList.removeClass('static-brand-list');
+        
+            $imageList.slick({
                 infinite: true,
                 slidesToShow: 5,
                 slidesToScroll: 1,
@@ -93,68 +128,80 @@ function renderBrandCarousel() {
                     }
                 ]
             });
-        }, 100);
+        }, 100);        
     }
 }
 
 function fetchBrands() {
     function waitForElement(selector, callback) {
-        const el = document.querySelector(selector);
-        if (el) {
+        const cb = $(selector);
+        if (cb) {
             callback();
         } else {
             setTimeout(() => waitForElement(selector, callback), 100);
         }
     }
 
-    const cachedBrands = sessionStorage.getItem('brands');
-
     $(document).ready(() => {
-        if (cachedBrands) {
-            brands = JSON.parse(cachedBrands);
-            imageUrls = brands.map(brand => brand.img);
-            waitForElement("#listagemProdutos", renderBrandCarousel);
-            return;
-        }
-    });
+        let cachedBrands = JSON.parse(sessionStorage.getItem('brands') || '[]');
+        let cachedBrandNames = new Set(cachedBrands.map(b => b.name.trim()));
 
-    $.ajax({
-        url: window.location.href,
-        method: 'GET',
-        dataType: 'html',
-        success: function (data) {
-            const items = $(data).find("ul.nivel-dois > li").filter(function () {
-                return $(this).attr('class')?.startsWith('categoria-marca-');
-            });
+        brands = [...cachedBrands];
 
-            let pending = items.length;
+        $.ajax({
+            url: window.location.href,
+            method: 'GET',
+            dataType: 'html',
+            success: function (data) {
+                const items = $(data).find("ul.nivel-dois > li").filter(function () {
+                    return $(this).attr('class')?.startsWith('categoria-marca-');
+                });
 
-            items.each(function () {
-                let { name, link, imgLink } = extractBrandData(this);
+                let pending = items.length;
+                let newBrandsCount = 0;
 
-                if (link && !link.startsWith('http')) {
-                    link = new URL(link, window.location.href).href;
+                if (pending === 0) {
+                    waitForElement("#listagemProdutos", renderBrandCarousel);
+                    return;
                 }
 
-                fetchBrandImage(imgLink, name, (brandName, brandImage) => {
-                    if (brandImage) {
-                        brands.push({
-                            name: brandName,
-                            link: link,
-                            img: brandImage
-                        });
+                items.each(function () {
+                    let { name, link, imgLink } = extractBrandData(this);
+
+                    if (cachedBrandNames.has(name)) {
+                        pending--;
+                        if (pending === 0) {
+                            sessionStorage.setItem('brands', JSON.stringify(brands));
+                            waitForElement("#listagemProdutos", renderBrandCarousel);
+                        }
+                        return;
                     }
 
-                    pending--;
-                    if (pending === 0) {
-                        renderBrandCarousel();
-                    }
+                    fetchBrandImage(imgLink, name, (brandName, brandImage) => {
+                        if (brandImage) {
+                            brands.push({
+                                name: brandName,
+                                link: link,
+                                img: brandImage
+                            });
+                            newBrandsCount++;
+                        }
+
+                        pending--;
+                        if (pending === 0) {
+                            if (newBrandsCount > 0) {
+                                sessionStorage.setItem('brands', JSON.stringify(brands));
+                            }
+                            waitForElement("#listagemProdutos", renderBrandCarousel);
+                        }
+                    });
                 });
-            });
-        },
-        error: function () {
-            console.log("Erro ao carregar painel de marcas");
-        }
+            },
+            error: function () {
+                console.log("Erro ao carregar painel de marcas");
+                waitForElement("#listagemProdutos", renderBrandCarousel);
+            }
+        });
     });
 }
 

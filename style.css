@@ -15,11 +15,11 @@
 .carouselSection {
     display: block;
     /* background-color: antiquewhite; */
-    height: 200px;
+    height: 230px;
     width: 100%;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
 }
 
 .carouselSection h2 {
@@ -28,28 +28,28 @@
 
 .carouselContainer ul {
     display: flex;
-
     overflow: hidden;
     list-style-type: none;
+    justify-content: space-evenly;
 }
 
 .carouselContainer li {
-    margin: 15px 18px 10px -8px;
+    display: flex;
+    width: 300px;
+    margin: 0px 0px 10px 0px;
 }
 
 .carouselContainer a {
     display: flex;
-
     text-decoration: none;
     color: rgb(0, 0, 0);
     background-color: wheat;
-
     height: 89px;
     width: 89px;
     border-radius: 50%;
-
     justify-content: center;
     align-items: center;
+    margin: 10px 0px 0px 10px;
 }
 
 /* .carouselContainer p {
@@ -104,7 +104,7 @@
     text-align: center;
 }
 
-.slick-slide p {
+/* .slick-slide p {
     margin: 20px 10px 10px 10px;
 
     text-align: center;
@@ -112,9 +112,17 @@
     font-size: 25px;
 
     color: black;
+} */
+
+#imageList p {
+    margin: 35px 0px 10px 30px;
+    font-weight: 500;
+    font-size: 25px;
+    text-align: center;
+    color: black;
 }
 
-/* brand ativa ou n */
+/* border `brand seleciona` */
 
 .active-brand {
     border: 2px solid red;
