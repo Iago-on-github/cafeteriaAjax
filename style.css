@@ -22,11 +22,12 @@
 
     overflow: hidden;
 
-    margin-bottom: 35px;
+    margin-bottom: 15px;
 }
 
 .carouselSection h2 {
     text-align: center;
+    margin-bottom: 20px;
 }
 
 .carouselContainer ul {
@@ -38,7 +39,7 @@
 }
 
 .carouselContainer li {
-    display: flex;
+    display: flex;   
 
     width: 300px;
     margin: 0px 0px 20px 0px;
@@ -92,16 +93,16 @@
     cursor: pointer;
     position: absolute;
 
-    top: 17%;
+    top: 40%;
     transform: translateY(-50%);
 }
 
 .slick-prev {
-    left: 3px;
+    left: 16px;
 }
 
 .slick-next {
-    right: 21px;
+    right: 10px;
 }
 
 .slick-slide {
@@ -124,10 +125,9 @@
 } */
 
 #imageList p {
-    margin: 35px 0px 10px 30px;
-
+    margin: 40px 0px 0px 15px;
     font-weight: 500;
-    font-size: 25px;
+    font-size: 20px;
 
     text-align: center;
 

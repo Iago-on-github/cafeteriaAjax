@@ -11,16 +11,3 @@
 -----------------------
 
 https://loja-convite-teste.lojaintegrada.com.br/marca/arno.html
-
------------------------
-
-flt fzr: 
-
-1 - A aplicação ela esta rodando diversas vezes, fazendo com o que o tamanho dela aumente cada vez mais, o objeto o array no 
-local storage fica maior a cada pagina acessada, o ideal que ele rode apenas uma vez e após isso validar 
-na pagina de categoria, caso exista alguma marca que não possua registro no session storage fazer uma nova busca e anexar as 
-novas. 
-
-2 - O problema de exibir todas as marcas em paginas que não possuem filtro de marcas ativo ainda persiste, 
-fazendo com que ela exiba na pagina de categoria. Ela deve exibir somente as marcas presentes na categoria/busca - (X)
- 

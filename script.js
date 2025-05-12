@@ -1,6 +1,13 @@
 // verificação da página atual para exibir ou não o carrossel
 function isCategoryOrSearchPage() {
-    return window.location.href.includes("/buscar?q=") || window.location.href.includes("/categoria/");
+    const urlBy = window.location.href.includes("/buscar?q=") || window.location.href.includes("/categoria/");
+
+    const dom = $(".categoria-marcas.com-filho.borda-principal").length > 0 ||
+                $("#listagemProduto".length > 0) ||
+                $(".facetaMarca").length > 0;
+
+    return urlBy || dom;
+    // return window.location.href.includes("/buscar?q=") || window.location.href.includes("/categoria/");
 }
 
 let brands = [];
@@ -94,7 +101,7 @@ function renderBrandCarousel() {
                 </div>
             </section>
         `;
-
+        
         $(".breadcrumbs.borda-alpha").before(carouselHTML);
 
         setTimeout(() => {
